@@ -24,17 +24,28 @@ class TSim : public TObject{
   //==================================
   // convert raw root file to root file
   // containing sorted events
-  Int_t SortEvents(TString);
+  Int_t  SortEvents(TString);
   Bool_t SortedROOTFileExists();
 
   //==================================
   // 
 
- 
+  
   Int_t CalculateAsymmetrySim(TString);
-  Int_t GraphAsymmetrySim(TString, TString);
+  Int_t CalculateAsymmetrySimScattered(TString,
+				       Float_t,
+				       Float_t);
+  
+  void CalculateABC();
+  
+  Int_t GraphAsymmetrySim(TString, 
+			  TString, 
+			  Int_t   nThSBins = 0,
+			  Float_t thSMin = 0.,
+			  Float_t thSMax = 0.);
+    
   Int_t CalculateAsymmetryLab(TString);
-  void GraphAsymmetryLab(TString);
+  void  GraphAsymmetryLab(TString);
   
   //==================================
     
@@ -65,9 +76,10 @@ class TSim : public TObject{
   //==== conditions =====
   
   Bool_t GoodTheta(Float_t);
-  Bool_t CentralY(Double_t);
+  Bool_t CentralYZ(Double_t);
   Bool_t CentralZ(Double_t);
-
+  Bool_t CentralXA(Double_t);
+  Bool_t CentralXB(Double_t);
   //====================================
   // overload operator to use with TF1
   double operator() (double *v, double *p) {
@@ -120,8 +132,14 @@ class TSim : public TObject{
 
   static const Int_t nThbins = 8;
   static const Int_t nPhibins = 4;
-  static const Int_t nPhibinsSim = 8; //can be changed (to a multiple of 4)
+  // can be changed (to a multiple of 4)
+  static const Int_t nPhibinsSim = 8; 
 
+  Int_t bin000 = 0;
+  Int_t bin090 = nPhibinsSim*1/4;
+  Int_t bin180 = nPhibinsSim*2/4;
+  Int_t bin270 = nPhibinsSim*3/4;
+  
   Double_t XposA[nCrystals];
   Double_t YposA[nCrystals];
   Double_t ZposA[nCrystals];
@@ -142,6 +160,12 @@ class TSim : public TObject{
   Float_t AePhiDiff[nThbins];
   Float_t AsTrue[nThbins];
   Float_t AeTrue[nThbins];
+
+  Float_t fABC[nThbins][3];
+  Float_t pABC[nThbins][3];
+  Float_t pA[nThbins];
+  Float_t pB[nThbins];
+  Float_t pC[nThbins];
 
   Int_t n000;
   Int_t n090;
@@ -177,9 +201,9 @@ class TSim : public TObject{
   // 
   void Loop();
   
- // Declaration of leaf types
- Double_t        edep0;
-   Double_t        edep1;
+  // Declaration of leaf types
+  Double_t        edep0;
+  Double_t        edep1;
    Double_t        edep2;
    Double_t        edep3;
    Double_t        edep4;
